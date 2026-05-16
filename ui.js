@@ -14,10 +14,10 @@ class UI{
             this.isInput = true;
             this.value = '';
             this.clickFunc = function(){
-                // textInput.value = this.value;
-                // if(charLimit) textInput.maxLength = charLimit;
-                // else textInput.removeAttribute('maxlength');
-                // textInput.focus();
+                textInput.value = this.value;
+                if(charLimit) textInput.maxLength = charLimit;
+                else textInput.removeAttribute('maxlength');
+                textInput.focus();
                 UI.inputData.value = this.value;
                 UI.inputData.maxLength = charLimit;
                 UI.inputData.cursor = UI.inputData.selectionStart = UI.inputData.selectionEnd = this.value.length;
@@ -262,6 +262,9 @@ UI.setInputCursorPosition = function(i, isSelecting){
         UI.inputData.selectionStart = i;
         UI.inputData.selectionEnd = i;
     }
+    if(document.activeElement === textInput){
+        textInput.setSelectionRange(UI.inputData.selectionStart, UI.inputData.selectionEnd, UI.inputData.cursor === UI.inputData.selectionStart ? "backward" : "forward");
+    }
 };
 
 UI.updateMouseOver = function(){
@@ -368,9 +371,10 @@ UI.init = function(){
         seedBox.hide();
         if(UI.viewBasin instanceof Basin){
             let basin = UI.viewBasin;
-            if(basin.godMode && keyIsPressed && basin.viewingPresent()) {
-                if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(key))
-                    basin.spawnArchetype(key,getMouseX(),getMouseY());
+            if(basin.godMode && basin.viewingPresent() && (keyIsPressed || (isMobile() && UI.godModeSelectedArchetype))) {
+                let archetype = keyIsPressed ? key : UI.godModeSelectedArchetype;
+                if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(archetype))
+                    basin.spawnArchetype(archetype,getMouseX(),getMouseY());
                 // let g = {x: getMouseX(), y: getMouseY()};
                 // if(key === "l" || key === "L"){
                 //     g.sType = "l";
@@ -2255,6 +2259,60 @@ UI.init = function(){
     },function(){
         helpBox.hide();
     });
+
+    let godModeMobileToolbar = primaryWrapper.append(false, 0, topBar.height, 30, 0, function(s){
+        if(isMobile() && UI.viewBasin && UI.viewBasin.godMode && UI.viewBasin.viewingPresent()){
+            this.show();
+            fill(COLORS.UI.box);
+            noStroke();
+            s.fullRect();
+        }else{
+            this.hide();
+        }
+    }, true, false);
+
+    const archetypes = [
+        {key: 'l', label: 'L'},
+        {key: 'x', label: 'X'},
+        {key: 'd', label: 'D'},
+        {key: 'D', label: 'SD'},
+        {key: 's', label: 'S'},
+        {key: 'S', label: 'SS'},
+        {key: '1', label: '1'},
+        {key: '2', label: '2'},
+        {key: '3', label: '3'},
+        {key: '4', label: '4'},
+        {key: '5', label: '5'},
+        {key: '6', label: '6'},
+        {key: '7', label: '7'},
+        {key: '8', label: '8'},
+        {key: '9', label: '9'},
+        {key: '0', label: '10'},
+        {key: 'y', label: 'Y'}
+    ];
+
+    let archY = 0;
+    for(let a of archetypes){
+        godModeMobileToolbar.append(false, 0, archY, 30, 22, function(s){
+            let selected = UI.godModeSelectedArchetype === a.key;
+            if(selected) fill(COLORS.UI.buttonHover);
+            else noFill();
+            s.fullRect();
+            s.button(a.label, false, 12);
+        }, function(){
+            if(UI.godModeSelectedArchetype === a.key) UI.godModeSelectedArchetype = undefined;
+            else UI.godModeSelectedArchetype = a.key;
+        });
+        archY += 22;
+    }
+    godModeMobileToolbar.height = archY;
+
+    bottomBar.append(false, 300, 3, 40, 24, function(s){
+        if(isMobile() && paused) s.button("Step", true, 12);
+        else this.hide();
+    }, function(){
+        if(UI.viewBasin) UI.viewBasin.advanceSim(1);
+    });
 };
 
 function mouseInCanvas(){
@@ -2279,16 +2337,16 @@ function keyPressed(){
     // console.log("keyPressed: " + key + " / " + keyCode);
     const k = key.toLowerCase();
     keyRepeatFrameCounter = -1;
-    if(/* document.activeElement === textInput */ UI.focusedInput){
+    if(document.activeElement === textInput || UI.focusedInput){
         switch(keyCode){
             case ESCAPE:
-                // textInput.value = UI.focusedInput.value;
-                // textInput.blur();
+                textInput.value = UI.focusedInput.value;
+                textInput.blur();
                 UI.focusedInput = undefined;
                 break;
             case ENTER:
                 let u = UI.focusedInput;
-                // textInput.blur();
+                textInput.blur();
                 u.value = UI.inputData.value;
                 UI.focusedInput = undefined;
                 if(u.enterFunc) u.enterFunc();
@@ -2304,8 +2362,10 @@ function keyPressed(){
             case RIGHT_ARROW:
             case BACKSPACE:
             case DELETE:
+                if(document.activeElement === textInput) return;
                 break;
             default:
+                if(document.activeElement === textInput) return;
                 if(keyIsDown(CONTROL)){
                     switch(k){
                         case 'x':
@@ -2387,6 +2447,7 @@ function keyPressed(){
 }
 
 function keyRepeat(){
+    if(document.activeElement === textInput) return;
     if(UI.focusedInput){
         switch(keyCode){
             case LEFT_ARROW:
@@ -2457,6 +2518,7 @@ function keyRepeat(){
 
 function keyTyped(){
     // console.log(`keyTyped: ${key} / ${keyCode}`);
+    if(document.activeElement === textInput) return;
     if(UI.focusedInput){
         UI.inputData.insert = key;
         return false;

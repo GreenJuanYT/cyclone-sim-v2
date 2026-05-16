@@ -303,7 +303,8 @@ UI.viewBasin = undefined;
 UI.init = function(){
     // hoist!
 
-    let yearselbox;
+    let yearselbox,
+        godModeMobilePanel;
 
     // "scene" wrappers
 
@@ -369,9 +370,10 @@ UI.init = function(){
         helpBox.hide();
         sideMenu.hide();
         seedBox.hide();
+        if(godModeMobilePanel) godModeMobilePanel.hide();
         if(UI.viewBasin instanceof Basin){
             let basin = UI.viewBasin;
-            if(basin.godMode && basin.viewingPresent() && (keyIsPressed || (isMobile() && UI.godModeSelectedArchetype))) {
+            if(basin.godMode && basin.viewingPresent() && (keyIsPressed || (isMobile() && UI.godModeSelectedArchetype && mouseIsPressed))) {
                 let archetype = keyIsPressed ? key : UI.godModeSelectedArchetype;
                 if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(archetype))
                     basin.spawnArchetype(archetype,getMouseX(),getMouseY());
@@ -893,6 +895,12 @@ UI.init = function(){
     },function(){
         simSettings.setColorScheme("incmod", COLOR_SCHEMES.length);
         refreshTracks(true);
+    }).append(false,0,37,300,30,function(s){     // god mode
+        let b = (UI.viewBasin instanceof Basin && UI.viewBasin.godMode) ? "Enabled" : "Disabled";
+        let grey = !(UI.viewBasin instanceof Basin);
+        s.button("God Mode: " + b, true, 18, grey);
+    },function(){
+        if(UI.viewBasin instanceof Basin) UI.viewBasin.godMode = !UI.viewBasin.godMode;
     });
 
     settingsMenu.append(false,WIDTH/2-150,7*HEIGHT/8-20,300,30,function(s){ // "Back" button
@@ -2260,16 +2268,28 @@ UI.init = function(){
         helpBox.hide();
     });
 
-    let godModeMobileToolbar = primaryWrapper.append(false, 0, topBar.height, 30, 0, function(s){
+    godModeMobilePanel = primaryWrapper.append(false, WIDTH/2 - 150, HEIGHT/2 - 200, 300, 400, function(s){
+        helpBox.hide();
+        sideMenu.hide();
+        seedBox.hide();
         if(isMobile() && UI.viewBasin && UI.viewBasin.godMode && UI.viewBasin.viewingPresent()){
-            this.show();
             fill(COLORS.UI.box);
             noStroke();
             s.fullRect();
+            fill(COLORS.UI.text);
+            textAlign(CENTER, TOP);
+            textSize(18);
+            text("God Mode Archetypes", this.width/2, 10);
         }else{
             this.hide();
         }
     }, true, false);
+
+    godModeMobilePanel.append(false, 270, 10, 20, 20, function(s){
+        s.button("X", false, 20);
+    }, function(){
+        godModeMobilePanel.hide();
+    });
 
     const archetypes = [
         {key: 'l', label: 'L'},
@@ -2291,25 +2311,36 @@ UI.init = function(){
         {key: 'y', label: 'Y'}
     ];
 
-    let archY = 0;
-    for(let a of archetypes){
-        godModeMobileToolbar.append(false, 0, archY, 30, 22, function(s){
+    for(let i=0; i<archetypes.length; i++){
+        let a = archetypes[i];
+        let col = i % 4;
+        let row = floor(i / 4);
+        godModeMobilePanel.append(false, 20 + col*70, 50 + row*40, 60, 30, function(s){
             let selected = UI.godModeSelectedArchetype === a.key;
             if(selected) fill(COLORS.UI.buttonHover);
-            else noFill();
+            else fill(COLORS.UI.buttonBox);
             s.fullRect();
-            s.button(a.label, false, 12);
+            s.button(a.label, false, 15);
         }, function(){
             if(UI.godModeSelectedArchetype === a.key) UI.godModeSelectedArchetype = undefined;
             else UI.godModeSelectedArchetype = a.key;
         });
-        archY += 22;
     }
-    godModeMobileToolbar.height = archY;
+
+    bottomBar.append(false, 250, 3, 40, 24, function(s){
+        if(isMobile() && UI.viewBasin && UI.viewBasin.godMode && UI.viewBasin.viewingPresent()){
+            s.button("God", true, 12);
+            this.show();
+        }else this.hide();
+    }, function(){
+        godModeMobilePanel.toggleShow();
+    });
 
     bottomBar.append(false, 300, 3, 40, 24, function(s){
-        if(isMobile() && paused) s.button("Step", true, 12);
-        else this.hide();
+        if(isMobile() && UI.viewBasin && UI.viewBasin.godMode && UI.viewBasin.viewingPresent() && paused) {
+            s.button("Step", true, 12);
+            this.show();
+        }else this.hide();
     }, function(){
         if(UI.viewBasin) UI.viewBasin.advanceSim(1);
     });

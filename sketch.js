@@ -5,7 +5,7 @@ var paused,
     waitingDescs,
     waitingTCSymbolSHem,
     simSettings,
-    // textInput,
+    textInput,
     buffers,
     scaler,
     tracks,
@@ -45,15 +45,39 @@ function setup(){
     waitingTCSymbolSHem = false; // yes seriously, a global var for this
     simSettings = new Settings();
 
-    // textInput = document.createElement("input");
-    // textInput.type = "text";
-    // document.body.appendChild(textInput);
-    // textInput.style.position = "absolute";
-    // textInput.style.left = "-500px";
-    // textInput.onblur = ()=>{
-    //     if(UI.focusedInput) UI.focusedInput.value = textInput.value;
-    //     UI.focusedInput = undefined;
-    // };
+    textInput = document.createElement("input");
+    textInput.type = "text";
+    document.body.appendChild(textInput);
+    textInput.style.position = "fixed";
+    textInput.style.left = "0";
+    textInput.style.top = "0";
+    textInput.style.width = "0";
+    textInput.style.height = "0";
+    textInput.style.opacity = "0";
+    textInput.style.pointerEvents = "none";
+    textInput.onblur = ()=>{
+        if(UI.focusedInput){
+            UI.focusedInput.value = textInput.value;
+            UI.focusedInput = undefined;
+        }
+    };
+
+    textInput.oninput = ()=>{
+        if(UI.focusedInput){
+            UI.inputData.value = textInput.value;
+            UI.inputData.cursor = textInput.selectionStart;
+            UI.inputData.selectionStart = textInput.selectionStart;
+            UI.inputData.selectionEnd = textInput.selectionEnd;
+        }
+    };
+
+    document.onselectionchange = ()=>{
+        if(document.activeElement === textInput && UI.focusedInput){
+            UI.inputData.cursor = textInput.selectionStart;
+            UI.inputData.selectionStart = textInput.selectionStart;
+            UI.inputData.selectionEnd = textInput.selectionEnd;
+        }
+    };
 
     // landWorker = new CSWorker();
 
@@ -139,7 +163,7 @@ function draw(){
             }
 
             keyRepeatFrameCounter++;
-            if(keyIsPressed /* && document.activeElement!==textInput */ && (keyRepeatFrameCounter>=KEY_REPEAT_COOLDOWN || keyRepeatFrameCounter===0) && keyRepeatFrameCounter%KEY_REPEATER===0)
+            if(keyIsPressed && document.activeElement!==textInput && (keyRepeatFrameCounter>=KEY_REPEAT_COOLDOWN || keyRepeatFrameCounter===0) && keyRepeatFrameCounter%KEY_REPEATER===0)
                 keyRepeat();
         
             UI.updateMouseOver();

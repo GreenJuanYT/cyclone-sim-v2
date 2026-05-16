@@ -67,6 +67,10 @@ function getMouseY(){
     return floor(mouseY/scaler);
 }
 
+function isMobile(){
+    return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+}
+
 function coordinateInCanvas(x,y,isPixelCoordinate){
     if(isPixelCoordinate) return x >= 0 && x < width && y >= 0 && y < height;
     return x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT;

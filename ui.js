@@ -365,18 +365,26 @@ UI.init = function(){
             drawBuffer(tracks);
             drawBuffer(forecastTracks);
             drawBuffer(stormIcons);
+            if(!isMobile() && basin.godMode && basin.viewingPresent() && keyIsPressed) {
+                let archetype = key;
+                if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(archetype))
+                    basin.spawnArchetype(archetype,getMouseX(),getMouseY());
+            }
         }
     },function(){
         helpBox.hide();
         sideMenu.hide();
         seedBox.hide();
-        if(godModeMobilePanel) godModeMobilePanel.hide();
+        if(godModeMobilePanel && !UI.godModeSelectedArchetype) godModeMobilePanel.hide();
         if(UI.viewBasin instanceof Basin){
             let basin = UI.viewBasin;
-            if(basin.godMode && basin.viewingPresent() && (keyIsPressed || (isMobile() && UI.godModeSelectedArchetype && mouseIsPressed))) {
-                let archetype = keyIsPressed ? key : UI.godModeSelectedArchetype;
-                if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(archetype))
+            if(basin.godMode && basin.viewingPresent() && isMobile() && UI.godModeSelectedArchetype) {
+                let archetype = UI.godModeSelectedArchetype;
+                if(['l','x','d','D','s','S','1','2','3','4','5','6','7','8','9','0','y'].includes(archetype)){
                     basin.spawnArchetype(archetype,getMouseX(),getMouseY());
+                    UI.godModeSelectedArchetype = undefined;
+                    godModeMobilePanel.hide();
+                }
                 // let g = {x: getMouseX(), y: getMouseY()};
                 // if(key === "l" || key === "L"){
                 //     g.sType = "l";
@@ -900,10 +908,8 @@ UI.init = function(){
         let grey = !(UI.viewBasin instanceof Basin);
         s.button("God Mode: " + b, true, 18, grey);
     },function(){
-        if(UI.viewBasin instanceof Basin) UI.viewBasin.godMode = !UI.viewBasin.godMode;
-    });
-
-    settingsMenu.append(false,WIDTH/2-150,7*HEIGHT/8-20,300,30,function(s){ // "Back" button
+        if(UI.viewBasin instanceof Basin) UI.viewBasin.godMode = UI.viewBasin.godMode ? 0 : 1;
+    }).append(false,0,37,300,30,function(s){ // "Back" button
         s.button("Back",true,20);
     },function(){
         settingsMenu.hide();
@@ -2268,7 +2274,7 @@ UI.init = function(){
         helpBox.hide();
     });
 
-    godModeMobilePanel = primaryWrapper.append(false, WIDTH/2 - 150, HEIGHT/2 - 200, 300, 400, function(s){
+    godModeMobilePanel = primaryWrapper.append(false, WIDTH - 180, 50, 170, 280, function(s){
         helpBox.hide();
         sideMenu.hide();
         seedBox.hide();
@@ -2278,17 +2284,18 @@ UI.init = function(){
             s.fullRect();
             fill(COLORS.UI.text);
             textAlign(CENTER, TOP);
-            textSize(18);
-            text("God Mode Archetypes", this.width/2, 10);
+            textSize(16);
+            text("Archetypes", this.width/2, 10);
         }else{
             this.hide();
         }
     }, true, false);
 
-    godModeMobilePanel.append(false, 270, 10, 20, 20, function(s){
+    godModeMobilePanel.append(false, 145, 5, 20, 20, function(s){
         s.button("X", false, 20);
     }, function(){
         godModeMobilePanel.hide();
+        UI.godModeSelectedArchetype = undefined;
     });
 
     const archetypes = [
@@ -2313,9 +2320,9 @@ UI.init = function(){
 
     for(let i=0; i<archetypes.length; i++){
         let a = archetypes[i];
-        let col = i % 4;
-        let row = floor(i / 4);
-        godModeMobilePanel.append(false, 20 + col*70, 50 + row*40, 60, 30, function(s){
+        let col = i % 3;
+        let row = floor(i / 3);
+        godModeMobilePanel.append(false, 10 + col*52, 35 + row*38, 48, 30, function(s){
             let selected = UI.godModeSelectedArchetype === a.key;
             if(selected) fill(COLORS.UI.buttonHover);
             else fill(COLORS.UI.buttonBox);

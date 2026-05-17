@@ -478,10 +478,10 @@ DesignationSystem.PAGASA = new DesignationSystem({
     anchor: 2001,
     nameThresh: 0,
     mainLists: [
-        ["Auring","Bising","Chico","Dante","Elias","Fabian","Gorio","Huaning","Isang","Jacinto","Kiko","Lannie","Magyawan","Nilad","Omar","Paolo","Quedan","Ramil","Salome","Tala","Urbano","Verbena","Wilma","Yasmin","Zoraida","Alamid","Bruno","Conching","Dolor","Ernie","Florante","Gerardo","Hernan","Isko","Jerome"],
-        ["Ada","Basyang","Caloy","Domeng","Ester","Francisco","Gardo","Henry","Inday","Josie","Kiyapo","Luis","Maymay","Neneng","Obet","Pilandok","Queenie","Rosal","Samuel","Tomas","Umberto","Venus","Waldo","Yayang","Zeny","Agila","Bagwis","Chito","Diego","Elena","Felino","Gunding","Harriet","Indang","Jessa"],
-        ["Amang","Betty","Chedeng","Dodong","Emil","Falcon","Gavino","Hanna","Ineng","Jenny","Kabayan","Liwayway","Marilyn","Nimfa","Onyok","Perla","Quiel","Ramon","Sarah","Tamaraw","Ugong","Viring","Weng","Yoyoy","Zigzag","Abe","Berto","Charo","Dado","Estoy","Felion","Gening","Herman","Irma","Jaime"],
-        ["Amuyao","Butchoy","Carina","Dindo","Edring","Ferdie","Gener","Helen","Igme","Josefa","Kidul","Lekep","Marce","Nanolay","Onos","Puwok","Querubin","Romina","Siony","Tonyo","Upang","Vicky","Warren","Yoyong","Zosimo","Alakdan","Baldo","Clara","Dencio","Estong","Felipe","Gomer","Heling","Ismael","Julio"]
+        ["Auring","Bising","Chico","Dante","Elias","Fabian","Gorio","Huaning","Isang","Jacinto","Kiko","Lannie","Magyawan","Nilad","Omar","Paolo","Quedan","Ramil","Salome","Tala","Urbano","Verbena","Wilma","Yasmin","Zoraida","Alamid","Bruno","Conching","Dolor","Ernie","Florante","Gerardo","Hernan","Isko","Jerome","Karl","Lito",],
+        ["Ada","Basyang","Caloy","Domeng","Ester","Francisco","Gardo","Henry","Inday","Josie","Kiyapo","Luis","Maymay","Neneng","Obet","Pilandok","Queenie","Rosal","Samuel","Tomas","Umberto","Venus","Waldo","Yayang","Zeny","Agila","Bagwis","Chito","Diego","Elena","Felino","Gunding","Harriet","Indang","Jessa","Kenneth","Leo"],
+        ["Amang","Betty","Chedeng","Dodong","Emil","Falcon","Gavino","Hanna","Ineng","Jenny","Kabayan","Liwayway","Marilyn","Nimfa","Onyok","Perla","Quiel","Ramon","Sarah","Tamaraw","Ugong","Viring","Weng","Yoyoy","Zigzag","Abe","Berto","Charo","Dado","Estoy","Felion","Gening","Herman","Irma","Jaime","Kilo","Lorenzo"],
+        ["Amuyao","Butchoy","Carina","Dindo","Edring","Ferdie","Gener","Helen","Igme","Josefa","Kidul","Lekep","Marce","Nanolay","Onos","Puwok","Querubin","Romina","Siony","Tonyo","Upang","Vicky","Warren","Yoyong","Zosimo","Alakdan","Baldo","Clara","Dencio","Estong","Felipe","Gomer","Heling","Ismael","Julio","Kerry","Lucio"]
     ]
 });
 

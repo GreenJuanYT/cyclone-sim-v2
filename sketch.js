@@ -51,8 +51,8 @@ function setup(){
     textInput.style.position = "fixed";
     textInput.style.left = "0";
     textInput.style.top = "0";
-    textInput.style.width = "0";
-    textInput.style.height = "0";
+    textInput.style.width = "1px";
+    textInput.style.height = "1px";
     textInput.style.opacity = "0";
     textInput.style.pointerEvents = "none";
     textInput.onblur = ()=>{

@@ -20,8 +20,8 @@ class UI{
                 textInput.focus();
                 UI.inputData.value = this.value;
                 UI.inputData.maxLength = charLimit;
-                UI.inputData.cursor = UI.inputData.selectionStart = UI.inputData.selectionEnd = this.value.length;
                 UI.focusedInput = this;
+                UI.setInputCursorPosition(this.value.length);
                 if(onclick instanceof Function) onclick.call(this,UI.focusedInput===this);
             };
             this.textCanvas = createBuffer(this.width,this.height);
@@ -263,6 +263,7 @@ UI.setInputCursorPosition = function(i, isSelecting){
         UI.inputData.selectionEnd = i;
     }
     if(document.activeElement === textInput){
+        if(textInput.value !== UI.inputData.value) textInput.value = UI.inputData.value;
         textInput.setSelectionRange(UI.inputData.selectionStart, UI.inputData.selectionEnd, UI.inputData.cursor === UI.inputData.selectionStart ? "backward" : "forward");
     }
 };
@@ -2253,9 +2254,8 @@ UI.init = function(){
         this.value = UI.viewBasin.seed.toString();
     }],function(){
         /* textInput */UI.inputData.value = this.value = UI.viewBasin.seed.toString();
-        // textInput.setSelectionRange(0,textInput.value.length);
-        UI.inputData.selectionStart = 0;
-        UI.inputData.selectionEnd = UI.inputData.value.length;
+        UI.setInputCursorPosition(0);
+        UI.setInputCursorPosition(this.value.length,true);
     },false);
 
     helpBox = primaryWrapper.append(false,WIDTH/8,HEIGHT/8,3*WIDTH/4,3*HEIGHT/4,function(s){
